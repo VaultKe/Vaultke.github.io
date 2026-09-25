@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && cp dist/index.html dist/404.html",
     "preview": "vite preview",
-    "deploy": "npm run build && gh-pages -d dist",
+    "deploy": "VITE_API_BASE_URL=https://gitrepoa-1.onrender.com/api/v1 npm run build && gh-pages -d dist --nojekyll -r https://github.com/VaultKe/Vaultke.github.io.git",
     "start": "serve -s dist -l $PORT"
   },
   "dependencies": {
