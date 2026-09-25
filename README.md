@@ -37,16 +37,9 @@ VaultKe/
 
 ### Runtime Config (Backend URL)
 
-The backend URL is **not hardcoded** in the source code. It's loaded at runtime
-from `/config.json`:
-
-1. On app startup, the frontend fetches `config.json` from the same origin.
-2. If `config.json` has `API_BASE_URL` set, it uses that.
-3. If empty, it falls back to `/api/v1` (same-origin relative path).
-4. The `VITE_API_BASE_URL` env var can be used for local development only.
-
-**Production deployment:** Edit `dist/config.json` on the server to set the real
-API URL. This file is never in source control with the real URL.
+The backend URL is set with `VITE_API_BASE_URL` during the production build.
+For local development, copy `.env.example` to `.env` and set the value there.
+The runtime `/config.json` fallback remains available for same-origin deployments.
 
 ### Backend (.env on the Go API server)
 
@@ -98,7 +91,7 @@ GET /api/v1/apk/version-check?currentVersionCode=23&currentVersionName=2.1.0
 }
 ```
 
-## GitHub Pages Deployment
+The `.env.example` file is intentionally excluded from version control. Keep the production URL in Render's environment variables.
 
 ```bash
 npm install

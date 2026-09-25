@@ -28,17 +28,19 @@ const loadRuntimeConfig = async () => {
   return configLoadingPromise;
 };
 
+const getViteApiBaseUrl = () => {
+  return import.meta.env?.VITE_API_BASE_URL || '';
+};
+
 export const getApiBaseUrl = async () => {
   const config = await loadRuntimeConfig();
+  const viteUrl = getViteApiBaseUrl();
 
-  let url = config.API_BASE_URL;
-
-  if (!url || url.trim() === '') {
-    url = typeof __VITE_API_BASE_URL__ !== 'undefined'
-      ? __VITE_API_BASE_URL__
-      : (process.env?.VITE_API_BASE_URL || DEFAULT_API_BASE_URL);
+  if (viteUrl && viteUrl.trim() !== '') {
+    return viteUrl.trim().replace(/\/+$/, '');
   }
 
+  const url = config.API_BASE_URL || DEFAULT_API_BASE_URL;
   return url.trim().replace(/\/+$/, '');
 };
 

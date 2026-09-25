@@ -64,40 +64,11 @@ export const checkForUpdate = async (options = {}) => {
   }
 };
 
-export const downloadApk = async (versionName, onProgress) => {
-  try {
-    const baseUrl = await getApiBaseUrl();
-    const downloadBase = baseUrl.replace(/\/api\/v1\/?$/, '');
-    const url = `${downloadBase}/api/v1/apk/download/${encodeURIComponent(versionName || '')}`;
-
-    const response = await fetch(url);
-
-    if (!response.ok) {
-      throw new Error(`Download failed: ${response.statusText}`);
-    }
-
-    const contentDisposition = response.headers.get('content-disposition');
-    let filename = `vaultke-${versionName || 'latest'}.apk`;
-    if (contentDisposition) {
-      const match = contentDisposition.match(/filename="(.+)"/);
-      if (match) filename = match[1];
-    }
-
-    const blob = await response.blob();
-    const blobUrl = URL.createObjectURL(blob);
-
-    const link = document.createElement('a');
-    link.href = blobUrl;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(blobUrl);
-
-    return { filename, size: blob.size };
-  } catch (error) {
-    throw new Error(`APK download failed: ${error.message}`);
-  }
+export const downloadApk = async (version) => {
+  const baseUrl = await getApiBaseUrl();
+  // Navigate instead of fetch(): the API redirects to the hosted APK, and the
+  // browser's own downloader handles large files without buffering them.
+  window.location.href = `${baseUrl}/apk/download/${encodeURIComponent(version || 'latest')}`;
 };
 
 export const getVersionHistory = async () => {

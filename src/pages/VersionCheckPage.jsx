@@ -29,7 +29,7 @@ const VersionCheckPage = () => {
         }
       );
       const data = await res.json();
-      setCheckResult(data);
+      setCheckResult(data.data || data);
     } catch (err) {
       setCheckResult({ success: false, error: err.message });
     } finally {

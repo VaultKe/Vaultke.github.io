@@ -14,8 +14,11 @@ const DownloadPage = () => {
     setLoading(true);
     try {
       const res = await api.get('/apk/latest');
-      const data = res.data || res;
-      setLatestVersion(data);
+      const payload = res.data;
+      const latest = payload && typeof payload === 'object' && Object.prototype.hasOwnProperty.call(payload, 'data')
+        ? payload.data
+        : payload;
+      setLatestVersion(latest);
     } catch (err) {
       showToast(`Failed to fetch version: ${err.message}`, 'error');
     } finally {
@@ -31,7 +34,11 @@ const DownloadPage = () => {
     if (!latestVersion) return;
     setDownloading(true);
     try {
-      await downloadApk(latestVersion.version_name || latestVersion.versionName);
+      await downloadApk(
+        latestVersion.downloadUrl
+          ? latestVersion.downloadUrl.split('/').pop()
+          : (latestVersion.versionName || latestVersion.version_name || 'latest')
+      );
       showToast('APK download started', 'success');
     } catch (err) {
       showToast(`Download failed: ${err.message}`, 'error');
@@ -44,7 +51,7 @@ const DownloadPage = () => {
     setChecking(true);
     try {
       const result = await checkForUpdate({
-        currentVersionCode: parseInt(latestVersion?.version_code || '1', 10) - 1,
+        currentVersionCode: parseInt(latestVersion?.versionCode || latestVersion?.version_code || '1', 10),
         currentVersionName: appVersion,
         skipCache: true,
       });
